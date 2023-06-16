@@ -36,3 +36,4 @@ dumped into dungeon from above - took dmg -> left to die
 
 # game mechanics
 - levels
+- items
