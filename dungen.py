@@ -13,11 +13,8 @@ if decision == "Q":
     sys.exit()
 
 clear()
-print("You were dumped into a dungeon from high above.\nYou took some damage.\nWhen you landed, you fainted.\n")
-time.sleep(2)
+print("You are dumped into a dungeon from high above.\nYou take some damage.\nWhen you land, you faint.\n")
+time.sleep(3)
 print("You wake up and see a slime staring at YOU! You are very scared!\nWhat will you do?")
-time.sleep(1)
-choice = input("\n1. run\n2. climb")
-    
-
-
+time.sleep(2)
+choice = input("\n1. run\n2. climb\n")
