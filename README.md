@@ -1,2 +1,2 @@
 # dungen-crawler
-leaernig how to program a game
+learning how to program a game
