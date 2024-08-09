@@ -16,8 +16,8 @@ class Actor():
     def take_damage(self, damage):
             self.hitpoints = self.hitpoints - damage
             
-    def deal_damage(self):
-        damage = random.randrange(1,self.level)
+    def deal_damage(target):
+        damage = random.randrange(1,target.level)
         return damage
 
 class Player(Actor):
@@ -28,6 +28,7 @@ class Player(Actor):
         self.hitpoints = self.maxhitpoints
         self.gold = 0
         self.experience = 0
+        self.is_in_combat = False
     
     def hunt(self):
         roll = random.randrange(100)
@@ -84,22 +85,25 @@ def run(player):
     if roll > 50:
         print("\nYou sucessfully run away!\n")
         print("You have %s hitpoints" % player.hitpoints)
+        player.is_in_combat = False
     elif roll > 30:
         damage_taken = math.ceil(random.randrange(10) / 100 * player.hitpoints)
         player.hitpoints = player.hitpoints - damage_taken
         print("\nYou manage to get away, taking %s damage." % damage_taken)
         print("you have %s hitpoints" % player.hitpoints)
+        player.is_in_combat = False
     else:
         damage_taken = math.ceil(random.randrange(10) / 100 * player.hitpoints)
         player.hitpoints = player.hitpoints - damage_taken
         print("\nYou fail to run away, taking %s damage." % damage_taken)
         print("you have %s hitpoints" % player.hitpoints)
 
-def climb():
+def climb(player):
     roll = random.randrange(100)
     if roll > 70:
         print("\nYou sucessfully climbed up!\n")
         print("You have %s hitpoints" % player.hitpoints)
+        player.is_in_combat = False
     elif roll > 50:
         damage_taken = math.ceil(random.randrange(10) / 100 * player.hitpoints)
         player.hitpoints = player.hitpoints - damage_taken
@@ -107,6 +111,7 @@ def climb():
             end_game()
         print("\nYou manage to get up, taking %s damage." % damage_taken)
         print("you have %s hitpoints" % player.hitpoints)
+        player.is_in_combat = False
     else:
         damage_taken = math.ceil(random.randrange(10) / 100 * player.hitpoints)
         player.hitpoints = player.hitpoints - damage_taken
@@ -128,11 +133,13 @@ def new_game():
     clear()
     print("You are dumped into a dungeon from high above.\nYou take some damage.\nWhen you land, you faint.\n")
     print("You wake up and see a slime staring at you! You are very scared!\nWhat will you do?")
-    choice = input("\n1. run\n2. climb\n")
-    if choice == "1":
-        run(player)
-    elif choice == "2":
-        climb(player)
+    player.is_in_combat = True
+    while(player.is_in_combat):
+        choice = input("\n1. run\n2. climb\n")
+        if choice == "1":
+            run(player)
+        elif choice == "2":
+            climb(player)
 
 def hunt():
     roll = random.randrange(100)
@@ -155,12 +162,13 @@ def spawn_monster(player):
     fight(player, monster)
 
 def fight(player, monster):
-    while monster:
+    print("You find a %s, trust me YOU ARE GONNA DIE" %monster.name)
+    while player.is_in_combat:
         x = input("1. Attack\n2. Run\n")
         if x == "1":
             attack(player, monster)
         if x == "2":
-            run()
+            run(player)
         else:
             pass
 def attack(player, monster):
