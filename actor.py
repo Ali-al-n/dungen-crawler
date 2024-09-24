@@ -1,5 +1,3 @@
-
-
 import math
 import os
 import random
@@ -15,21 +13,21 @@ class Actor():
 
     def take_damage(self, damage):
             self.hitpoints = self.hitpoints - damage
-            
+
     def deal_damage(target):
         damage = random.randrange(1,target.level)
         return damage
 
 class Player(Actor):
     def __init__(self, level=1):
-        self.level = level 
+        self.level = level
         self.stamina = 100
         self.maxhitpoints = 15 * 1.05 ** (self.level - 1)
         self.hitpoints = self.maxhitpoints
         self.gold = 0
         self.experience = 0
         self.is_in_combat = False
-    
+
     def hunt(self):
         roll = random.randrange(100)
         if roll < 15:
@@ -57,7 +55,7 @@ class Monster(Actor):
         self.experience = self.level*4
         self.maxhitpoints = 15 * 1.05 ** (self.level - 1)
         self.hitpoints = self.maxhitpoints
-        
+
 
 def new_player(level=1):
     if 'player1' not in locals() or 'player1' not in globals():
