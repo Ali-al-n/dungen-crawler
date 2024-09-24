@@ -11,7 +11,15 @@ print("Welcome to our game!")
 print("made by:\nAli-al-n and \nhaaln\n")
 
 decision = input("press anything to play\npress Q to quit\n")
-if decision == "Q":
+if decision == "Q" or "q":
+    print("Good bye!!!")
+    import time
+    time.sleep(3)
+    print("hold on one sec")
+    time.sleep(2)
+    print("ther we go")
+    time.sleep(0.5)
+    os.system('clear')
     sys.exit()
 
 
