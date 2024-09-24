@@ -1,13 +1,12 @@
+#!/usr/bin/python3
+
 import sys
 import os
 
 import actor
 
-###########################################################################
-#                                 MAIN                                    #
-###########################################################################
 os.system('clear')
-print("Welcome to our game!\n")
+print("Welcome to our game!")
 
 print("made by:\nAli-al-n and \nhaaln\n")
 
