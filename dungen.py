@@ -12,7 +12,7 @@ print("made by:\nAli-al-n and \nhaaln\n")
 
 decision = input("press anything to play\npress Q to quit\n")
 if decision == "Q":
-    os.system.exit()
+    sys.exit()
 
 
 actor.new_game()
