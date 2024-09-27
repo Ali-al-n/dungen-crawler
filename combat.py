@@ -60,17 +60,16 @@ def fight(player, monster):
         if x == "1":
             attack(player, monster)
         if x == "2":
-            run(player)
+            run(player, monster)
         else:
             pass
 
 def attack(player, monster):
+    player_atk = actor.Actor.deal_damage(monster)
+    monster_atk = actor.Actor.deal_damage(player)
 
-    dmg = player.deal_damage(monster)
-    dmg_mob = monster.deal_damage(player)
-
-    monster.take_damage(dmg)
-    print("You strike the %s" %monster.name+" and deal %i damage." %dmg + ' It has %i hitpoints left.' %monster.hitpoints)
+    monster.take_damage(player_atk)
+    print("You strike the %s" %monster.name+" and deal %i damage." %player_atk + ' It has %i hitpoints left.' %monster.hitpoints)
     if monster.hitpoints <= 0:
         print('You slay the %s' %monster.name + ' and gain %i EXP' %monster.experience)
         player.addExperience(monster.experience)
@@ -85,9 +84,9 @@ def attack(player, monster):
             player.gold += monster.gold
             print('You find %i gold.' %monster.gold)
         del monster
-        player.isInCombat = False
+        player.is_in_combat = False
     else:
-        player.takeDamage(dmg_mob)
+        player.take_damage(monster_atk)
     if player.hitpoints <= 0:
         player.isInCombat = False
         new_player()

@@ -17,7 +17,7 @@ class Actor():
             self.hitpoints -= damage
 
     def deal_damage(target):
-        damage = random.randrange(1,target.level)
+        damage = random.randrange(target.level)
         return damage
 
 class Player(Actor):
@@ -41,10 +41,9 @@ class Player(Actor):
     def scavenge(self):
         print ("you find the FINAL BOSS")
 
-    def rest(self):
-        self.hitpoints = self.maxhitpoints
-        print("YOU REST!!! You have %s hitpoints." %self.hitpoints)
-
+    def rest(player):
+        player.hitpoints = player.maxhitpoints
+        print("YOU REST!!! You have %i hitpoints." %player.hitpoints)
 
     def addExperience(self, exp):
         self.experience += exp
@@ -64,6 +63,7 @@ def new_player(level=1):
         player = Player(level)
 
 def play(self):
+       #clear()
        if self:
            x = input("What would you like to do?\n1. Hunt\n2. Scavenge\n3. Rest\n")
            if x == "1":
@@ -118,6 +118,8 @@ def new_game():
     print("You are very scared!\nWhat will you do?")
     choice = input("\n1. Find a safe place\n2. Rest and heal.\n")
     if choice == "1":
+        player.hitpoints = player.maxhitpoints
+        print('You find a safe place.\n')
         play(player)
     elif choice == "2":
         player.rest()
@@ -126,6 +128,8 @@ def hunt():
     roll = random.randrange(100)
     if roll < 15:
         #find_loot
+        print('you find loot')
+        print('!!!currently not working!!!')
         pass
     else:
         combat.spawn_monster(player)
