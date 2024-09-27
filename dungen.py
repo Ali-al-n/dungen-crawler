@@ -11,7 +11,7 @@ print("Welcome to our game!")
 print("made by:\nAli-al-n and \nhaaln\n")
 
 decision = input("press anything to play\npress Q to quit\n")
-if decision == "Q" or "q":
+if decision == "Q" or decision == "q":
     print("Good bye!!!")
     import time
     time.sleep(3)

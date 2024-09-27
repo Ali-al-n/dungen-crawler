@@ -12,9 +12,9 @@ class Equipment:
 class ItemSlot(Enum):
     WEAPON = 1
     SHIELD = 2
-    ARMOR = 3
+    CHESTPLATE = 3
     HELMET = 4
-    BOOTS = 5
+    PANTS = 5
     RING = 6
     NECKLACE = 7
 
