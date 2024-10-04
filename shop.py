@@ -73,22 +73,20 @@ def shopMenu(player):
     items = generateItems()
     while True:
         canvas.canvas()
-        x = input('What would you like to do?\n1. Browse wares\n2. Sell\n')
+        x = input('What would you like to do?\n1. Browse wares\n2. Sell\n3. Leave shop\n')
         if x == "1":
+            log.clear_history()
             displayItems(items)
             buyItem(player, items)
             #canvas.canvas()
             continue
         if x == "2":
             sellItem(player)
+        if x == "3":
+            log.clear_history()
+            break
         else:
-            canvas.canvas()
-            x = input('Leave shop?\n1. Yes\n2. No\n')
-            if x == "1":
-                log.clear_history()
-                break
-            else:
-                pass
+            pass
 
 if __name__ == '__main__':
     actor.player1.gold = 1000

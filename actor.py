@@ -137,7 +137,7 @@ class Player(Actor):
 
    def addExperience(self, amount):
        self.experience += amount
-       if self.experience >= 10:
+       if self.experience >= 10+self.level**1.75:
            self.levelUp()
            log.history.append('You gain a level. You are now level %i.' %self.level)
 
@@ -150,6 +150,7 @@ class Player(Actor):
        self.AP += 1
        self.DP += 1
        self.maxHP += 5
+       self.hitpoints = self.maxHP
 
    def rest(self):
        self.moveTo(canvas.FIRE)
@@ -214,7 +215,7 @@ class Monster(Actor):
     def __init__(self, name, level):
        super().__init__(name, level)
        self.dropTable = items.item_pool
-       self.gold = random.randint(1,3*self.level)
+       self.gold = random.randint(3*self.level,10*self.level)
 
 player1 = Player(name='Adventurer', level=1)
 

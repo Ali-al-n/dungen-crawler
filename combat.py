@@ -77,14 +77,21 @@ def combat(player, monster):
 def combat_encounter(player):
     roll = random.randint(0,100)
     if roll >= 90:
-        monster = actor.Monster(name='Chaos Dwarf', level=random.randint(player.level,player.level+2))
+        monster = actor.Monster(name='Devil Dwarf', level=random.randint(player.level-2,player.level+2))
+        player.moveTo(canvas.DWARF)
     elif roll >= 10:
-        monster = actor.Monster(name='Dwarf', level=random.randint(player.level,player.level+1))
+        monster = actor.Monster(name='Dwarf', level=random.randint(player.level-2,player.level+1))
+        player.moveTo(canvas.DWARF)
     else:
         monster = actor.Monster(name='Drunken Dwarf', level=player.level)
         monster.takeDamage(monster.hitpoints*0.3)
+        player.moveTo(canvas.DRUNKEN_DWARF)
+    
+    if monster.level < 1:
+        del monster
+        monster = actor.Monster(name='Dwarf', level=random.randint(player.level,player.level+1))
+
     player.isInCombat = True
-    player.moveTo(canvas.DWARF)
     log.history.append("You encounter a level %i" %monster.level+" %s!" %monster.name)
     combat(player, monster)
 
