@@ -41,34 +41,30 @@ def sellItem(player):
     player.remItem(x-1)
     canvas.canvas()
 def  buyItem(player, items):
+
     if len(items) == 0:
         log.history.append('There are no more items to buy.')
         return
+
     if player.getInventorySize() == 5:
         log.history.append('Your bag is full.')
         #ask if want to replace
         return
+
     try:
         x = int(input("What would you like to buy?\n"))
     except ValueError as e:
         return
+
     if x > 5 or x < 1:
         return
-    # x = int(input("Buy what?\n"))
-    # if y == "2":
-    #     return
-    # canvas.canvas()
-    # log.clear_history()
-    # try:
-    #     # x = int(input("Buy what?\n"))
-    # except ValueError as e:
-    #     print(e)
-        # return
+
     if player.gold < items[x-1].value:
         canvas.canvas()
         print('You do not have enough money.')
         buyItem(player, items)
         return
+
     player.gold -= items[x-1].value
     player.addItem(items[x-1])
     items.pop(x-1)
