@@ -38,12 +38,18 @@ class Actor:
        if self.hitpoints > self.maxHP:
             self.hitpoints = self.maxHP
 
+class Monster(Actor):
+    def __init__(self, name, level):
+       super().__init__(name, level)
+       self.dropTable = items.item_pool
+       self.gold = random.randrange(3*self.level,10*self.level)
+
 class Player(Actor):
    def __init__(self, name, level):
        super().__init__(name, level)
        self.name = 'Player'
-       self.AP = 5 + self.level
-       self.DP = 2 + self.level
+       self.AP = 3
+       self.DP = 3
        self.level = 1
        self.inventory = []
        self.location = None
@@ -91,11 +97,7 @@ class Player(Actor):
            self.moveTo(canvas.EMPTY_PIC)
            return
        roll = round(random.randint(0,100))
-       if roll > 90:
-           log.history.append('You find a merchant inside the dungeon!')
-           self.moveTo(canvas.SHOP)
-           shop.shopMenu(self)
-           return
+
        if roll > 90:
            #self.stamina -= 40
            self.moveTo(canvas.TREASURE_CHEST)
@@ -103,10 +105,15 @@ class Player(Actor):
            log.history.append('You found a treasure chest with a %s.' % item.name)
            self.addItem(item)
            canvas.canvas()
-       elif roll > 50:
+       elif roll > 80:
+           log.history.append('You find a merchant inside the dungeon!')
+           self.moveTo(canvas.SHOP)
+           shop.shopMenu(self)
+           return
+       elif roll > 60:
            #self.stamina -= 20
            self.moveTo(canvas.EMPTY_PIC)
-           gold_amt = random.randint(0,30)
+           gold_amt = random.randint(0,20)
            self.gold += gold_amt
            log.history.append("You found a %i gold pieces." % gold_amt)
            canvas.canvas()
@@ -147,8 +154,8 @@ class Player(Actor):
    def levelUp(self):
        self.experience = 0
        self.level += 1
-       self.AP += 1
-       self.DP += 1
+       self.AP += 2
+       self.DP += 2
        self.maxHP += 5
        self.hitpoints = self.maxHP
 
@@ -161,6 +168,9 @@ class Player(Actor):
    def equipItem(self, invSlot):
        try:
            slot_nr = self.showInventory()[invSlot-1].slot
+           if slot_nr == 8:
+               self.equipment.pop(0)
+               self.equipment.pop(1)
            self.equipment[slot_nr] = self.showInventory()[invSlot-1]
        except:
            return
@@ -206,13 +216,6 @@ class Player(Actor):
        else:
            #canvas.canvas()
                self.rest()
-       else:
-
-class Monster(Actor):
-    def __init__(self, name, level):
-       super().__init__(name, level)
-       self.dropTable = items.item_pool
-       self.gold = random.randint(3*self.level,10*self.level)
 
 player1 = Player(name='Adventurer', level=1)
 

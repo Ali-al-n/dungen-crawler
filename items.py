@@ -25,12 +25,15 @@ class ItemSlot(Enum):
     BOOTS = 5
     RING = 6
     NECKLACE = 7
+    TWO_HANDED_WEAPON = 8 # fix later (how 2h weapons are handled)
 
 club        = Equipment(name='Club', AP=2, DP=0, rarity=1, slot=ItemSlot.WEAPON)
 dagger      = Equipment(name='Dagger', AP=3, DP=0, rarity=2, slot=ItemSlot.WEAPON)
-sword       = Equipment(name='Sword', AP=4, DP=1, rarity=4, slot=ItemSlot.WEAPON)
+sword       = Equipment(name='Sword', AP=5, DP=3, rarity=4, slot=ItemSlot.WEAPON)
 shield      = Equipment(name='Bronze Shield', AP=0, DP=4, rarity=4, slot=ItemSlot.SHIELD)
-sword_2       = Equipment(name='Enchanted Heavy Sword', AP=10, DP=3, rarity=12, slot=ItemSlot.WEAPON)
+sword_2       = Equipment(name='Heavy Sword', AP=10, DP=3, rarity=14, slot=ItemSlot.WEAPON)
+sword_3       = Equipment(name='Short Sword', AP=6, DP=1, rarity=5, slot=ItemSlot.WEAPON)
+
 
 helmet      = Equipment(name='Helmet',AP=0, DP=2, rarity=3, slot=ItemSlot.HELMET)
 armor       = Equipment(name='Armor',AP=0, DP=4, rarity=3, slot=ItemSlot.ARMOR)
