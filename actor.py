@@ -205,11 +205,8 @@ class Player(Actor):
                pass
        else:
            #canvas.canvas()
-           x = input("What would you like to do?\n1. Play again\n2. Quit\n")
-           if x == "1":
-               self.new_player()
-               play()
-
+               self.rest()
+       else:
 
 class Monster(Actor):
     def __init__(self, name, level):
