@@ -9,13 +9,14 @@ class Consumable:
         self.value = 10 + 5*heal_mod + self.damage*5
 
 class Equipment:
-    def __init__(self, name:str, AP:int, DP:int, rarity:int, slot:Enum):
+    def __init__(self, name:str, AP:int, DP:int, rarity:int, slot:Enum, description:str="Test item"):
         self.name = name
         self.rarity = rarity
         self.AP = AP
         self.DP = DP
         self.value = 30 + AP*9 + rarity*10 + DP*12
         self.slot = slot
+        self.description = description
 
 class ItemSlot(Enum):
     WEAPON = 1
@@ -27,12 +28,12 @@ class ItemSlot(Enum):
     NECKLACE = 7
     TWO_HANDED_WEAPON = 8 # fix later (how 2h weapons are handled)
 
-club        = Equipment(name='Club', AP=2, DP=0, rarity=1, slot=ItemSlot.WEAPON)
-dagger      = Equipment(name='Dagger', AP=3, DP=0, rarity=2, slot=ItemSlot.WEAPON)
-sword       = Equipment(name='Sword', AP=5, DP=3, rarity=4, slot=ItemSlot.WEAPON)
-shield      = Equipment(name='Bronze Shield', AP=0, DP=4, rarity=4, slot=ItemSlot.SHIELD)
-sword_2       = Equipment(name='Heavy Sword', AP=10, DP=3, rarity=14, slot=ItemSlot.WEAPON)
-sword_3       = Equipment(name='Short Sword', AP=6, DP=1, rarity=5, slot=ItemSlot.WEAPON)
+club        = Equipment(name='Club', AP=2, DP=0, rarity=1, slot=ItemSlot.WEAPON, description="A big wooden Club")
+dagger      = Equipment(name='Dagger', AP=3, DP=0, rarity=2, slot=ItemSlot.WEAPON, description="A short pointy Dagger")
+sword       = Equipment(name='Sword', AP=5, DP=3, rarity=4, slot=ItemSlot.WEAPON, description="A regular Sword")
+shield      = Equipment(name='Bronze Shield', AP=0, DP=4, rarity=4, slot=ItemSlot.SHIELD, description="A round Shield")
+sword_2       = Equipment(name='Heavy Sword', AP=10, DP=3, rarity=14, slot=ItemSlot.WEAPON, description="A very very Heavy Sword")
+sword_3       = Equipment(name='Short Sword', AP=6, DP=1, rarity=5, slot=ItemSlot.WEAPON, description="A short and fast Sword")
 
 
 helmet      = Equipment(name='Helmet',AP=0, DP=2, rarity=3, slot=ItemSlot.HELMET)

@@ -58,6 +58,8 @@ class Player(Actor):
        self.gold = 0
        self.equipment = { 1: None, 2: None, 3: None, 4: None, 5: None, 6: None, 7: None}
        self.isInCombat = False
+       self.counter = 0
+       self.dungen = 1
 
    def getInventorySize(self):
        return len(self.inventory)
@@ -143,6 +145,7 @@ class Player(Actor):
        del self
 
    def addExperience(self, amount):
+       self.counter += 1
        self.experience += amount
        if self.experience >= 10+self.level**1.75:
            self.levelUp()

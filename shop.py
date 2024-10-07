@@ -48,25 +48,33 @@ def  buyItem(player, items):
         log.history.append('Your bag is full.')
         #ask if want to replace
         return
-    y = input("What would you like to do?\n1. Buy\n2. Go Back\n")
+    y = input("What would you like to do?\n1. Buy\n2. Go Back\n3. Inspect Item\n")
     if y == "2":
         return
-    canvas.canvas()
-    log.clear_history()
-    try:
-        x = int(input("Buy what?\n"))
-    except ValueError as e:
-        print(e)
-        return
-    if player.gold < items[x-1].value:
+    elif y == "3":
+        # check if weapon or potion
+        i = input("Enter the number of the item\n" )
+        log.history.append(items[int(i) - 1].name )
+        log.history.append("AP: " + str(items[int(i) - 1].AP))
+        log.history.append("DP: " + str(items[int(i) - 1].DP))
+        log.history.append("description: " + items[int(i) - 1].description)
+    elif y == "1":
         canvas.canvas()
-        print('You do not have enough money.')
-        buyItem(player, items)
-        return
-    player.gold -= items[x-1].value
-    player.addItem(items[x-1])
-    items.pop(x-1)
-    canvas.canvas()
+        log.clear_history()
+        try:
+            x = int(input("Buy what?\n"))
+        except ValueError as e:
+            print(e)
+            return
+        if player.gold < items[x-1].value:
+            canvas.canvas()
+            print('You do not have enough money.')
+            buyItem(player, items)
+            return
+        player.gold -= items[x-1].value
+        player.addItem(items[x-1])
+        items.pop(x-1)
+        canvas.canvas()
 
 # does not remove bought item
 def shopMenu(player):

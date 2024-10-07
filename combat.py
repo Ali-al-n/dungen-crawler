@@ -75,6 +75,9 @@ def combat(player, monster):
             pass
 
 def combat_encounter(player):
+    if player.counter == 5:
+        monster = actor.Monster(name='dragon', level=random.randint(player.level,player.level+6))
+        player.moveTo(canvas.DWARF)
     roll = random.randint(0,100)
     if roll >= 90:
         monster = actor.Monster(name='Devil Dwarf', level=random.randint(player.level,player.level+2))
