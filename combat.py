@@ -75,9 +75,6 @@ def combat(player, monster):
             pass
 
 def combat_encounter(player):
-    if player.counter == 5:
-        monster = actor.Monster(name='dragon', level=random.randint(player.level,player.level+6))
-        player.moveTo(canvas.DWARF)
     roll = random.randint(0,100)
     if roll >= 90:
         monster = actor.Monster(name='Devil Dwarf', level=random.randint(player.level,player.level+2))
@@ -89,7 +86,6 @@ def combat_encounter(player):
         monster = actor.Monster(name='Drunken Dwarf', level=player.level)
         monster.takeDamage(monster.hitpoints*0.3)
         player.moveTo(canvas.DRUNKEN_DWARF)
-
     # make monster range go from player level -2 to +2
 
     player.isInCombat = True
@@ -113,3 +109,42 @@ def random_encounter(self):
         canvas.canvas()
     else:
         combat_encounter(self)
+
+def boss_fight(player, boss):
+    while player.isInCombat:
+        canvas.canvas()
+        x = input("What would you like to do?\n1. Attack\n2. Items\n")
+        if x == "1":
+            attack_boss(player, boss)
+        elif x == "2":
+            player.useItem()
+
+def attack_boss(player, boss):
+
+    dmg = player.dealDamage(boss)
+    dmg_mob = boss.dealDamage(player)
+
+    log.history.append("The %s" %boss.name +  " deals %i damage." %dmg_mob)
+    boss.takeDamage(dmg)
+    log.history.append("You strike the %s" %boss.name+" and deal %i damage." %dmg + ' It has %i hitpoints left.' %boss.hitpoints)
+    if boss.hitpoints <= 0:
+        log.history.append('You slay the %s' %boss.name + ' and gain %i EXP' %boss.experience)
+        player.addExperience(boss.experience)
+
+        player.gold += boss.gold
+        boss_drop = random.choice(boss.dropTable)
+        player.addItem(boss_drop)
+        log.history.append('You find a %s.' %boss_drop.name)
+
+        log.history.append('You find %i gold.' %boss.gold)
+
+        del boss
+        player.moveTo(canvas.TREASURE_CHEST)
+        player.isInCombat = False
+        player.counter = 0
+    else:
+        player.takeDamage(dmg_mob)
+    if player.hitpoints <= 0:
+        player.isInCombat = False
+        player.moveTo(canvas.DEATH)
+        actor.new_player()

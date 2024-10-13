@@ -44,6 +44,13 @@ class Monster(Actor):
        self.dropTable = items.item_pool
        self.gold = random.randrange(3*self.level,10*self.level)
 
+
+class Boss(Actor):
+    def __init__(self, name, level):
+       super().__init__(name, level)
+       self.dropTable = items.boss_item_pool
+       self.gold = random.randrange(3*self.level,10*self.level)
+
 class Player(Actor):
    def __init__(self, name, level):
        super().__init__(name, level)
@@ -55,10 +62,11 @@ class Player(Actor):
        self.location = None
        self.experience = 0
        self.stamina = 100
+       self.inventorySlots = 10
        self.gold = 0
        self.equipment = { 1: None, 2: None, 3: None, 4: None, 5: None, 6: None, 7: None}
        self.isInCombat = False
-       self.counter = 0
+       self.counter = 5
        self.dungen = 1
 
    def getInventorySize(self):
@@ -71,7 +79,7 @@ class Player(Actor):
        self.inventory.pop(slot)
 
    def addItem(self, item):
-       if len(self.inventory) > 4:
+       if len(self.inventory) > self.inventorySlots:
            log.history.append('Bag is full.')
            return
        self.inventory.insert(0,item)
@@ -195,7 +203,10 @@ class Player(Actor):
    def play(self):
        if self:
            canvas.canvas()
-           x = input("What would you like to do?\n1. Hunt\n2. Scavenge\n3. Rest\n4. Equip item\n5. View Equipment.\n")
+           if self.counter >=  5:
+               x = input("What would you like to do?\n1. Hunt\n2. Scavenge\n3. Rest\n4. Equip item\n5. View Equipment.\n6. Fight Boss")
+           else:
+               x = input("What would you like to do?\n1. Hunt\n2. Scavenge\n3. Rest\n4. Equip item\n5. View Equipment.\n")
            if x == "1":
                self.moveTo(canvas.DWARF)
                self.hunt()
@@ -214,6 +225,11 @@ class Player(Actor):
            elif x == "5":
                canvas.canvas()
                self.viewEquipment()
+           elif x =="6":
+               boss = Boss("Ancient Dragon", 10)
+               self.moveTo(canvas.DWARF)
+               self.isInCombat = True
+               combat.boss_fight(self, boss)
            else:
                pass
        else:

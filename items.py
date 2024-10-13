@@ -54,3 +54,9 @@ armors = [helmet, armor, boots]
 potion = [red_potion, red_heal, big_heal] * 2
 
 item_pool = weapons + armors + potion + accessory
+
+dragon_sword    = Equipment(name='Dragon Slayer Sword', AP=10, DP=1, rarity=15, slot=ItemSlot.WEAPON, description="A destructive lightning sword")
+
+boss_item_pool = [dragon_sword]
+
+# put boss items here
