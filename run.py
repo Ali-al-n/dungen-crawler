@@ -1,13 +1,17 @@
-#!/bin/python
-import sys
-import os
-import random
+#!/usr/bin/python
 
-import actor
+import game
+import sys
+import curses
+
 
 def main():
-    while True:
-        actor.player1.play()
+    try:
+        curses.wrapper(game.initialize)
+    except KeyboardInterrupt:
+        print("\nCaught KeyboardInterrupt signal. Exiting...")
+        sys.exit()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
