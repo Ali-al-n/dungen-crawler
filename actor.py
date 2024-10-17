@@ -44,9 +44,10 @@ class Monster(Actor):
 
 
 class Boss(Actor):
-    def __init__(self, name, level):
+    def __init__(self, name, level, dropTable, picture):
         super().__init__(name, level)
-        self.dropTable = items.boss_item_pool
+        self.dropTable = dropTable
+        self.picture = picture
         self.gold = random.randrange(3 * self.level, 10 * self.level)
 
 
@@ -76,7 +77,7 @@ class Player(Actor):
         self.experience = experience
         self.isPlay = 1
         self.stamina = stamina
-        self.inventorySlots = 6
+        self.inventorySlots = 18
         self.gold = gold
         self.equipment = equipment
         self.isInCombat = False
@@ -128,7 +129,7 @@ class Player(Actor):
         self.inventory.pop(slot)
 
     def addItem(self, item):
-        if len(self.inventory) > self.inventorySlots:
+        if len(self.inventory) == self.inventorySlots:
             render.HISTORY.append("Bag is full.")
             return
         self.inventory.append(item)
@@ -166,12 +167,12 @@ class Player(Actor):
             render.HISTORY.append("You found a treasure chest with a %s." % item.name)
             self.addItem(item)
 
-        elif roll > 80:
+        elif roll > 60:
             render.HISTORY.append("You find a merchant inside the dungeon!")
             self.location = render.SHOP
             # shop.shopMenu(self)
             return
-        elif roll > 60:
+        elif roll > 20:
             self.stamina -= 20
             self.moveTo(render.EMPTY_PIC)
             gold_amt = random.randint(0, 20)
@@ -281,8 +282,27 @@ ORC = {
     "dropTable": items.dwarf_droptable,
     "picture": render.DWARF,
 }
+NECROMANCER = {
+    "name": "Necromancer",
+    "level": random.randrange(14, 16),
+    "dropTable": items.dragon_sword,
+    "picture": render.DWARF,
+}
+LIZARD = {
+    "name": "Lizard",
+    "level": random.randrange(5, 16),
+    "dropTable": items.dragon_sword,
+    "picture": render.DWARF,
+}
+DRAGON = {
+    "name": "Dragon",
+    "level": random.randrange(10, 16),
+    "dropTable": items.dragon_sword,
+    "picture": render.DWARF,
+}
 
 MONSTERS = [GOBLIN, DWARF, ORC, DRUNKEN_DWARF]
+BOSSES = [DRAGON, NECROMANCER, LIZARD]
 
 
 def spawn_monster():
@@ -291,3 +311,9 @@ def spawn_monster():
         monster["name"], monster["level"], monster["dropTable"], monster["picture"]
     )
     return monster
+
+
+def spawn_boss():
+    boss = random.choice(BOSSES)
+    boss = Boss(boss["name"], boss["level"], boss["dropTable"], boss["picture"])
+    return boss

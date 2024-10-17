@@ -5,24 +5,20 @@ import actor
 import render
 
 
-class Game:
-    def __init__(self):
-        self.player = actor.Player()
+def createInstance():
+    player = actor.Player()
+    return player
 
 
-def initialize(stdscr):
+def initialize():
     curses.curs_set(0)
     render.init_colors()
-    game = Game()
-    run(stdscr, game.player)
 
 
-def run(stdscr, player):
+def run(stdscr):
     while True:
-        main_menu(stdscr, player)
-        del player
-        game = Game()
-        player = game.player
+        initialize()
+        main_menu(stdscr)
 
         key = stdscr.getch()
         if key == ord("q"):
@@ -35,7 +31,7 @@ def load_game(stdscr):
     return render.render(stdscr, actor.Player(data))
 
 
-def main_menu(stdscr, player):
+def main_menu(stdscr):
     current_row = 0
     menu = ["Start Game", "Load Game", "Instructions", "Exit"]
 
@@ -115,6 +111,8 @@ def main_menu(stdscr, player):
         elif key == curses.KEY_ENTER or key in [10, 13, 32]:
             if current_row == 0:
                 # Start game
+                player = createInstance()
+                player.inventory = []
                 return render.render(stdscr, player)
             elif current_row == 1:
                 load_game(stdscr)
@@ -122,7 +120,6 @@ def main_menu(stdscr, player):
                 show_instructions(stdscr)
             elif current_row == 3:
                 sys.exit()
-
         stdscr.refresh()
 
 
@@ -138,4 +135,4 @@ def show_instructions(stdscr):
             )
         except curses.error:
             pass
-    stdscr.getch()  # Wait for any key press
+    stdscr.getch()

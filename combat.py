@@ -39,9 +39,8 @@ def attack(player, monster):
     if player.hitpoints <= 0:
         player.isInCombat = False
         player.location = render.DEATH
-        PLAY = 0
-        return PLAY
-        # actor.new_player()
+        player.isPlay = 0
+        render.HISTORY = render.HISTORY_CLEAN[-10:]
 
 
 def run(player, monster):
@@ -57,7 +56,7 @@ def run(player, monster):
         if player.hitpoints <= 0:
             player.isInCombat = False
             player.location = render.DEATH
-            actor.new_player()
+            player.isPlay = 0
         player.isInCombat = False
         render.HISTORY.append(
             "You manage to get away, taking %s damage." % damage_taken
@@ -69,7 +68,7 @@ def run(player, monster):
         if (player.hitpoints) <= 0:
             player.isInCombat = False
             player.location = render.DEATH
-            actor.new_player()
+            player.isPlay = 0
 
 
 def combat_encounter(player):

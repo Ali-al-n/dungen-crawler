@@ -6,11 +6,11 @@ import curses
 
 
 def main():
-    try:
-        curses.wrapper(game.initialize)
-    except KeyboardInterrupt:
-        print("\nCaught KeyboardInterrupt signal. Exiting...")
-        sys.exit()
+    # try:
+    curses.wrapper(game.run)
+    # except KeyboardInterrupt:
+    #     print("\nCaught KeyboardInterrupt signal. Exiting...")
+    #     sys.exit()
 
 
 if __name__ == "__main__":

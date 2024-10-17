@@ -1,4 +1,5 @@
 import curses
+
 import actor
 import combat
 import shop
@@ -10,6 +11,8 @@ def render(stdscr, player):
         combat_menu(stdscr, player)
     elif player.location == SHOP:
         render_shop_menu(stdscr, player)
+    elif player.location == EQUIP_ITEM:
+        equip_item_menu(stdscr, player)
     else:
         game_menu(stdscr, player)
 
@@ -19,13 +22,9 @@ def render(stdscr, player):
 
 def render_screen(stdscr, player):
     stdscr.clear()
-    # Draw the main window
     draw_player_location(stdscr, player)
-    # Draw Player Stats
     draw_player_stats(stdscr, player)
-    # Draw player inventory
     display_inventory(stdscr, player)
-    # Draw message log
     game_messages(stdscr, player)
 
 
@@ -35,7 +34,7 @@ def draw_player_stats(stdscr, player):
     stdscr.addstr(0, len(player.location[0]), separator)
     for idy, line in enumerate(STATUS_WINDOW):
         stdscr.addstr(idy + 1, len(player.location[0]), line + str(stats[idy]))
-    stdscr.addstr(len(STATUS_WINDOW), len(player.location[0]), separator)
+    stdscr.addstr(len(STATUS_WINDOW) + 1, len(player.location[0]), separator)
 
 
 def use_item(stdscr, player):
@@ -50,10 +49,10 @@ def use_item(stdscr, player):
 
 
 def display_inventory(stdscr, player):
-    stdscr.addstr(len(STATUS_WINDOW) + 1, len(player.location[0]), " Inventory:")
+    stdscr.addstr(len(STATUS_WINDOW) + 2, len(player.location[0]), " Inventory:")
     for idy, item in enumerate(player.inventory):
         stdscr.addstr(
-            len(STATUS_WINDOW) + 2 + idy,
+            len(STATUS_WINDOW) + 3 + idy,
             len(player.location[0]) + 1,
             str(str(idy + 1) + ". " + item.name),
         )
@@ -149,8 +148,8 @@ def render_shop_buy_menu(stdscr, player, items):
             stdscr.clear()
             render_screen(stdscr, player)
             break
-            # if current_row == 2:
-            #     inspect_item()
+            if current_row == 2:
+                inspect_item()
 
         draw_player_location(stdscr, player)
         draw_player_stats(stdscr, player)
@@ -226,7 +225,7 @@ def combat_menu(stdscr, player):
     monster = actor.spawn_monster()
     while player.isInCombat:
         menu_str = "What would you like to do?"
-        stdscr.addstr(len(player.location) + len(MSG_BOX), 0, menu_str)
+        stdscr.addstr(len(player.location) + len(MSG_BOX) + 1, 0, menu_str)
         for idy, line in enumerate(COMBAT_MENU_OPTIONS):
             if idy == current_row:
                 stdscr.attron(curses.color_pair(1))
@@ -275,6 +274,7 @@ def combat_menu(stdscr, player):
             elif current_row == 2:
                 # Run
                 combat.run(player, monster)
+                render_screen(stdscr, player)
                 pass
             elif current_row == 3:
                 pass
@@ -329,7 +329,7 @@ def draw_player_location(stdscr, player):
         stdscr.addstr(idy, 0, line)
 
 
-def equip_item(stdscr, player):
+def equip_item_menu(stdscr, player):
     current_row = 0
     render_screen(stdscr, player)
     draw_player_location(stdscr, player)
@@ -347,7 +347,7 @@ def equip_item(stdscr, player):
                     stdscr.addstr(
                         1 + len(player.location) + len(MSG_BOX) + idx + 1,
                         0,
-                        str(idx) + ". " + player.inventory[idx].name,
+                        str(idx + 1) + ". " + player.inventory[idx].name,
                     )
                 except curses.error:
                     pass
@@ -357,7 +357,7 @@ def equip_item(stdscr, player):
                     stdscr.addstr(
                         1 + len(player.location) + len(MSG_BOX) + idx + 1,
                         0,
-                        str(idx) + ". " + player.inventory[idx].name,
+                        str(idx + 1) + ". " + player.inventory[idx].name,
                     )
                 except curses.error:
                     pass
@@ -368,6 +368,8 @@ def equip_item(stdscr, player):
         key = stdscr.getch()
 
         if key == ord("q"):
+            player.location = EMPTY_PIC
+            render(stdscr, player)
             break
         stdscr.addstr(
             len(player.location) + len(GAME_MENU_OPTIONS) + len(MSG_BOX) + 2,
@@ -380,12 +382,9 @@ def equip_item(stdscr, player):
             key == curses.KEY_DOWN or key == ord("j")
         ) and current_row < player.getInventorySize() - 1:
             current_row += 1
-        elif key == ord("q"):
-            break
         elif key == curses.KEY_ENTER or key in [10, 13, 32]:
             player.equipItem(current_row)
             player.location = EMPTY_PIC
-            break
         # draw_player_location(stdscr, player)
         # draw_player_stats(stdscr, player)
         # game_messages(stdscr, player)
@@ -393,35 +392,27 @@ def equip_item(stdscr, player):
 
 def game_menu(stdscr, player):
     current_row = 0
-    # method = {
-    #     0: player.hunt(),
-    #     1: player.scavenge(),
-    #     2: player.rest(),
-    #     3: player.equip_item(stdscr, player),
-    #     4: player.viewEquipment(),
-    # }
+    if player.counter > 5:
+        menu = GAME_MENU_OPTIONS_BOSS
+        y = len(player.location) + len(MSG_BOX) + 2
+    else:
+        menu = GAME_MENU_OPTIONS
+        y = len(player.location) + len(MSG_BOX) + 2
     while player.isPlay:
         menu_str = "What would you like to do?"
-        stdscr.addstr(len(player.location) + 1 + len(MSG_BOX), 0, menu_str)
-        for idx, row in enumerate(GAME_MENU_OPTIONS):
-            # x = border_x_start + border_padding
-            # y = menu_y_start + 2 + idx
-
+        stdscr.addstr(y - 1, 0, menu_str)
+        for idx, row in enumerate(menu):
             # paint selected option red
             if idx == current_row:
                 stdscr.attron(curses.color_pair(1))
                 try:
-                    stdscr.addstr(
-                        1 + len(player.location) + len(MSG_BOX) + idx + 1, 0, row
-                    )
+                    stdscr.addstr(y + idx, 0, row)
                 except curses.error:
                     pass
                 stdscr.attroff(curses.color_pair(1))
             else:
                 try:
-                    stdscr.addstr(
-                        1 + len(player.location) + len(MSG_BOX) + 1 + idx, 0, row
-                    )
+                    stdscr.addstr(y + idx, 0, row)
                 except curses.error:
                     pass
 
@@ -432,40 +423,37 @@ def game_menu(stdscr, player):
 
         if key == ord("q"):
             stdscr.addstr(
-                len(player.location) + len(GAME_MENU_OPTIONS) + len(MSG_BOX) + 2,
+                len(player.location) + len(menu) + len(MSG_BOX) + 2,
                 0,
                 "Are you sure? (press Q again to quit)",
             )
             key = stdscr.getch()
             if key == ord("q"):
-                # stats = player.getStats()
-                # for i, stat in enumerate(stats):
-                #     stdscr.addstr(i, 0, str(stat))
                 player.saveGame()
                 player.isPlay = 0
+                stdscr.clear()
+                stdscr.addstr(
+                    len(player.location) + len(menu) + len(MSG_BOX) + 2,
+                    0,
+                    "Press any key to return to main menu.",
+                )
                 break
-                # sys.exit()
         stdscr.addstr(
-            len(player.location) + len(GAME_MENU_OPTIONS) + len(MSG_BOX) + 2,
+            len(player.location) + len(menu) + len(MSG_BOX) + 2,
             0,
-            "                                     ",
+            "                                                                 ",
         )
         if (key == curses.KEY_UP or key == ord("k")) and current_row > 0:
             current_row -= 1
         elif (key == curses.KEY_DOWN or key == ord("j")) and current_row < len(
-            GAME_MENU_OPTIONS
+            menu
         ) - 1:
             current_row += 1
 
-        elif key == ord("q"):
-            break
         elif key == curses.KEY_ENTER or key in [10, 13, 32]:
-            # if current_row in method:
-            #     return method[current_row]
             if current_row == 0:
                 # Start game
                 player.hunt()
-                render(stdscr, player)
             elif current_row == 1:
                 # Scavenge
                 player.scavenge()
@@ -473,44 +461,90 @@ def game_menu(stdscr, player):
             elif current_row == 2:
                 # Rest
                 player.rest()
-                render(stdscr, player)
             elif current_row == 3:
                 # Equip Item
-                player.location = EQUIP_ITEM
-                equip_item(stdscr, player)
+                if player.getInventorySize() == 0:
+                    HISTORY.append("Your inventory is empty.")
+                else:
+                    player.location = EQUIP_ITEM
+                    equip_item_menu(stdscr, player)
+                    # break
                 render(stdscr, player)
-                pass
             elif current_row == 4:
                 # View Equipment
                 player.viewEquipment()
-                render(stdscr, player)
             elif current_row == 5:
                 # Boss fight
+                boss_fight_menu(stdscr, player)
+                render(stdscr, player)
+            render(stdscr, player)
+
+
+def boss_fight_menu(stdscr, player):
+    current_row = 0
+    monster = actor.spawn_boss()
+    while player.isInCombat:
+        menu_str = "What would you like to do?"
+        stdscr.addstr(len(player.location) + len(MSG_BOX) + 1, 0, menu_str)
+        for idy, line in enumerate(COMBAT_MENU_OPTIONS):
+            if idy == current_row:
+                stdscr.attron(curses.color_pair(1))
+                try:
+                    stdscr.addstr(
+                        len(player.location) + len(MSG_BOX) + idy + 1, 0, line
+                    )
+                except curses.error:
+                    pass
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                try:
+                    stdscr.addstr(
+                        len(player.location) + len(MSG_BOX) + 1 + idy, 0, line
+                    )
+                except curses.error:
+                    pass
+
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if (key == curses.KEY_UP or key == ord("k")) and current_row > 0:
+            current_row -= 1
+        elif (key == curses.KEY_DOWN or key == ord("j")) and current_row < len(
+            COMBAT_MENU_OPTIONS
+        ) - 1:
+            current_row += 1
+        elif key == ord("q"):
+            stdscr.addstr(
+                len(player.location) + len(COMBAT_MENU_OPTIONS) + len(MSG_BOX) + 2,
+                0,
+                "Quitting is disabled during battles!",
+            )
+        elif key == curses.KEY_ENTER or key in [10, 13, 32]:
+            if current_row == 0:
+                # Attack
+                # monster = actor.spawn_monster()
+                combat.attack(player, monster)
+                render_screen(stdscr, player)
                 pass
-        # draw_player_location(stdscr, player)
-        # draw_player_stats(stdscr, player)
-        # game_messages(stdscr, player)
-
-
-HISTORY = ["", "", "", "", "", "", "", "", "", "You find yourself alone in a cave."]
-HISTORY_CLEAN = [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "You find yourself alone in a cave.",
-]
-SEPARATOR = "###################################################################"
-MSG_BOX = HISTORY[-10:]
+            elif current_row == 1:
+                # Items
+                use_item_menu(stdscr, player)
+                render_screen(stdscr, player)
+            elif current_row == 2:
+                # Run
+                combat.run(player, monster)
+                render_screen(stdscr, player)
+                pass
+            elif current_row == 3:
+                pass
+        draw_player_location(stdscr, player)
+        draw_player_stats(stdscr, player)
+        game_messages(stdscr, player)
 
 
 def game_messages(stdscr, player):
-    MSG_BOX = HISTORY[-10:]
+    MSG_BOX = HISTORY[-LOG_SIZE:]
     for idx, line in enumerate(MSG_BOX):
         stdscr.addstr(len(player.location) + idx, 0, " " * 50)
         stdscr.addstr(len(player.location) + idx, 0, line)
@@ -519,11 +553,7 @@ def game_messages(stdscr, player):
 
 def init_colors():
     curses.start_color()
-    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)  # Walls
-    curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_BLACK)  # Gun
-    curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)  # Vertical edges
-    curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)  # Floors/Ceilings
-    curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)  # Enemies
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
 
 
 EMPTY_PIC = [
@@ -745,6 +775,37 @@ SHOP = [
     "#__/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_#",
     "##################################################################",
 ]
+EQUIP_ITEM = [
+    "##################################################################",
+    "#               |                 |             |                #",
+    "#____        &                        /(#          ______________#",
+    "#            /%    #&              @ *(##             |          #",
+    "#____       &&&%/@@&@@@@@@@@@@@@@@@@ *#%#%%&       ___|__________#",
+    "#         &%((**,,(&%@@@@@@@@@@@@(&#,/*****/#(                   #",
+    "#____    //*    .,*/**@@&@@@@@.#%(*/*,,.     #((   ______________#",
+    "#       ,#       ,*/**@@&%%%%%%%@ //**,.     % *#     |          #",
+    "#____  .# ,  .  , ///@##%%%&%%#(((&&/((/*. *@%**(  ___|__________#",
+    "#       * ,#@ **.&%/ ./#%%%&%%#(/.  ...  .@ @@&*/@@              #",
+    "#____(    ,@@%@&/     ,(/###%(##*       #&@        ______________#",
+    "#           @% &(    , .%/#%%#(%*.*     ##@           |          #",
+    "#____          %%*      ,(#%###(*.     /(%         ___|__________#",
+    "#              %%#*    .,%%###% ,.    ,#%#                       #",
+    "#____          #&(/(...*%%&%&%%%%*., .*%%#         ______________#",
+    "#              %&#/,...,(%%%&&%%#/,...,#%(            |          #",
+    "#____          *&#*/,,,*(%&&&&%%#( .,,*/%/         ___|__________#",
+    "#              %&%(.   ,(&&&%###(.    (#%(                       #",
+    "#____         %&##*/  .,(#%%%%%#(,  & ,/#@%        ______________#",
+    "#            %&&/*.%..,/#%%%#%%#(/,.(,* @&%           |          #",
+    "#__________  &&&&/..,/,(%%%&%%%#%&(*,..##@%#       ___|__________#",
+    "#__/___/____&#@.....(#@,//     (%@@@  .,*@@&       ____/______/__#",
+    "#___________(##/*,,,,,@%       .#@..( .*(%&((      _/_____/______#",
+    "#__/___/___/*#(/,,.../%#        @&(.. .,(#%&%      ____/______/__#",
+    "#__________(%#(/,,..*%/          @@*...,/#%%%      _/_____/______#",
+    "#__/___/____##(*,,,(               #,#..,/##%      ____/______/__#",
+    "#___________(%(((,%.                %%,.,*(#       _/_____/______#",
+    "#__/___/___/__/((..                  / %%**        ____/______/__#",
+    "##################################################################",
+]
 MENU_ART = [
     r" /$$$$$$$                                                                                  ",
     r"| $$__  $$                                                                                 ",
@@ -778,7 +839,6 @@ INSTRUCTIONS = [
     "Press any key to return to the menu.",
 ]
 GAME_MENU_OPTIONS_BOSS = [
-    "What would you like to do?",
     "1. Hunt",
     "2. Scavenge",
     "3. Rest",
@@ -807,34 +867,20 @@ STATUS_WINDOW = [
 SHOP_MENU = ["1. Browse wares", "2. Sell", "3. Leave shop"]
 SHOP_BUY_MENU = ["1. Buy", "2. Go Back", "3. Inspect Item"]
 
-EQUIP_ITEM = [
-    "##################################################################",
-    "#               |                 |             |                #",
-    "#____        &                        /(#          ______________#",
-    "#            /%    #&              @ *(##             |          #",
-    "#____       &&&%/@@&@@@@@@@@@@@@@@@@ *#%#%%&       ___|__________#",
-    "#         &%((**,,(&%@@@@@@@@@@@@(&#,/*****/#(                   #",
-    "#____    //*    .,*/**@@&@@@@@.#%(*/*,,.     #((   ______________#",
-    "#       ,#       ,*/**@@&%%%%%%%@ //**,.     % *#     |          #",
-    "#____  .# ,  .  , ///@##%%%&%%#(((&&/((/*. *@%**(  ___|__________#",
-    "#       * ,#@ **.&%/ ./#%%%&%%#(/.  ...  .@ @@&*/@@              #",
-    "#____(    ,@@%@&/     ,(/###%(##*       #&@        ______________#",
-    "#           @% &(    , .%/#%%#(%*.*     ##@           |          #",
-    "#____          %%*      ,(#%###(*.     /(%         ___|__________#",
-    "#              %%#*    .,%%###% ,.    ,#%#                       #",
-    "#____          #&(/(...*%%&%&%%%%*., .*%%#         ______________#",
-    "#              %&#/,...,(%%%&&%%#/,...,#%(            |          #",
-    "#____          *&#*/,,,*(%&&&&%%#( .,,*/%/         ___|__________#",
-    "#              %&%(.   ,(&&&%###(.    (#%(                       #",
-    "#____         %&##*/  .,(#%%%%%#(,  & ,/#@%        ______________#",
-    "#            %&&/*.%..,/#%%%#%%#(/,.(,* @&%           |          #",
-    "#__________  &&&&/..,/,(%%%&%%%#%&(*,..##@%#       ___|__________#",
-    "#__/___/____&#@.....(#@,//     (%@@@  .,*@@&       ____/______/__#",
-    "#___________(##/*,,,,,@%       .#@..( .*(%&((      _/_____/______#",
-    "#__/___/___/*#(/,,.../%#        @&(.. .,(#%&%      ____/______/__#",
-    "#__________(%#(/,,..*%/          @@*...,/#%%%      _/_____/______#",
-    "#__/___/____##(*,,,(               #,#..,/##%      ____/______/__#",
-    "#___________(%(((,%.                %%,.,*(#       _/_____/______#",
-    "#__/___/___/__/((..                  / %%**        ____/______/__#",
-    "##################################################################",
+HISTORY = ["", "", "", "", "", "", "", "", "", ""]
+HISTORY_CLEAN = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
 ]
+SEPARATOR = "###################################################################"
+LOG_SIZE = 5
+
+MSG_BOX = HISTORY[-LOG_SIZE:]
